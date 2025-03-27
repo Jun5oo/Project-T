@@ -1,51 +1,56 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class SelectionManager : MonoBehaviour
 {
-    [SerializeField] UIManager uiManager; 
-    [SerializeField] List<CardUI> selectedCard;
-    int maxCardNum = 3; 
+    [SerializeField] TurnManager turnManager; 
+
+    [SerializeField] List<CardUI> selectedCard = new List<CardUI>();
+
+    public Action<List<CardUI>> OnSelectionChanged;
+
+    int maxCardNum = 3;
 
     void Awake()
     {
-        ClearList(); 
+        Init();     
+    }
+
+    void Init()
+    {
+        turnManager.OnTurnChanged += StartSelectionPhase; 
+    }
+
+    void StartSelectionPhase()
+    {
+        Debug.Log("Start Selection Phase"); 
     }
 
     public void AddToList(CardUI card)
     {
+        if (selectedCard.Count >= maxCardNum)
+            return; 
+
         selectedCard.Add(card);
-        uiManager.UpdateSelectionOrderUI();
+        OnSelectionChanged?.Invoke(selectedCard);
     }
     public void RemoveFromList(CardUI card)
     {
-        foreach(CardUI selected in selectedCard)
+        if (!selectedCard.Remove(card))
         {
-            if (selected.cardName == card.cardName)
-            {
-                selectedCard.Remove(selected);
-                break; 
-            }
+            Debug.LogError($"No {card.name} is found at selectedCard List");
+            return;
         }
-        uiManager.UpdateSelectionOrderUI(); 
+
+        OnSelectionChanged?.Invoke(selectedCard);
     }
-    public void ClearList() => selectedCard.Clear(); 
-    public bool IsCardFull() => selectedCard.Count >= maxCardNum? true : false;
-    public int GetSelectedOrder(CardUI card)
+    public void ClearList()
     {
-        int idx = 0; 
-
-        for (int i = 0; i < selectedCard.Count; i++)
-        {
-            if (selectedCard[i].cardName == card.cardName)
-            {
-                idx = i + 1;
-                break;
-            }
-        }
-
-        return idx;
+        selectedCard.Clear();
+        OnSelectionChanged?.Invoke(selectedCard); 
     }
-    public List<CardUI> GetAllSelectedCard() => selectedCard; 
+    public bool IsCardFull() => selectedCard.Count >= maxCardNum;
 }

@@ -1,22 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using static EnumScript;
 
 public class TurnManager : MonoBehaviour
 {
-    public enum Turn
-    {
-        Selection,
-        Battle, 
-    }
-
-    [SerializeField] SelectionManager selectionManager;
     [SerializeField] Turn currentTurn;
+    public Action OnTurnChanged; 
 
     private void Awake()
     {
-        currentTurn = Turn.Selection; 
+        Init(); 
+    }
+
+    void Init()
+    {
+        currentTurn = Turn.Selection;
+        OnTurnChanged?.Invoke(); 
     }
 
     public void ChangeTurn()
@@ -30,6 +32,8 @@ public class TurnManager : MonoBehaviour
                 currentTurn = Turn.Selection;
                 break; 
         }
+
+        OnTurnChanged?.Invoke(); 
     }
 
     public Turn GetCurrentTurn() => currentTurn; 

@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using TMPro;
 using UnityEngine;
 
@@ -13,12 +12,17 @@ public class UIManager : MonoBehaviour
     [SerializeField] GameObject cardPrefab;
     [SerializeField] GameObject cardParent;
 
-    [SerializeField] TextMeshProUGUI currentPhase;
+    [SerializeField] TextMeshProUGUI currentPhase;  
 
     void Awake()
     {
+        Init(); 
+    }
+
+    void Init()
+    {
         CreateCardUI();
-        UpdatePhaseUI(); 
+        turnManager.OnTurnChanged += UpdatePhaseUI; 
     }
 
     public void CreateCardUI()
@@ -32,21 +36,11 @@ public class UIManager : MonoBehaviour
             CardUI cardScript = cu.GetComponent<CardUI>();
             cardScript.Initialize(card);
         }
-
-        // CloseCardUI(); 
     }
 
-    public void DisplayCardUI() => cardParent.SetActive(true);
-    public void CloseCardUI() => cardParent.SetActive(false);
-    public void UpdatePhaseUI() => currentPhase.text = turnManager.GetCurrentTurn().ToString();
-    public void UpdateSelectionOrderUI()
+    public void OnDisplaySelectionEndButton()
     {
-        List<CardUI> selected = selectionManager.GetAllSelectedCard(); 
-        
-        foreach (var card in selected)
-        {
-            int idx = selectionManager.GetSelectedOrder(card);
-            card.UpdateSelectedOrder(idx); 
-        }
+
     }
+    public void UpdatePhaseUI() => currentPhase.text = turnManager.GetCurrentTurn().ToString();
 }

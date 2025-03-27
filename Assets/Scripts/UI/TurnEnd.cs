@@ -8,7 +8,6 @@ public class TurnEnd : MonoBehaviour
     [SerializeField] TurnManager turnManager; 
     public void OnClickEvent()
     {
-        // selectionManager.ExecuteAllCard();
-        // selectionManager.ClearList(); 
+        turnManager.ChangeTurn(); 
     }
 }
