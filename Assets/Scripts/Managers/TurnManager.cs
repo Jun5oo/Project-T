@@ -8,7 +8,6 @@ using static EnumScript;
 public class TurnManager : MonoBehaviour
 {
     [SerializeField] Turn currentTurn;
-    public Action OnTurnChanged; 
 
     private void Awake()
     {
@@ -18,7 +17,6 @@ public class TurnManager : MonoBehaviour
     void Init()
     {
         currentTurn = Turn.Selection;
-        OnTurnChanged?.Invoke(); 
     }
 
     public void ChangeTurn()
@@ -32,8 +30,26 @@ public class TurnManager : MonoBehaviour
                 currentTurn = Turn.Selection;
                 break; 
         }
+    }
 
-        OnTurnChanged?.Invoke(); 
+    void StartSelectionPhase()
+    {
+
+    }
+
+    void EndSelectionPhase()
+    {
+
+    }
+
+    void StartBattlePhase()
+    {
+
+    }
+
+    void EndBattlePhase()
+    {
+
     }
 
     public Turn GetCurrentTurn() => currentTurn; 

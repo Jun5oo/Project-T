@@ -30,22 +30,6 @@ public class CardManager : MonoBehaviour
         Init(); 
     }
 
-    void Update()
-    {
-        #if UNITY_EDITOR
-        DevInput();
-        #endif
-    }
-
-    void DevInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-            DrawCard();
-
-        if (Input.GetKeyDown(KeyCode.D))
-            DiscardAllCards(); 
-    }
-
     void Init()
     {
         deckList = new Queue<CardSO>();
@@ -57,7 +41,7 @@ public class CardManager : MonoBehaviour
         UpdateDiscardPileNum(); 
     }
 
-    void DrawCard()
+    public void DrawCard()
     {
         CardSO cardData = null;
 
@@ -76,7 +60,7 @@ public class CardManager : MonoBehaviour
         CardAlignment(); 
     }
 
-    void CardAlignment()
+    public void CardAlignment()
     {
         var targetCards = handCardList;
        
@@ -91,7 +75,7 @@ public class CardManager : MonoBehaviour
             targetCard.MoveTransform(targetCard.originPRS, true, 0.7f); 
         }
     }
-    List<PRS> RoundAlignment(Transform left, Transform right, int objCount, float height, Vector3 scale)
+    public List<PRS> RoundAlignment(Transform left, Transform right, int objCount, float height, Vector3 scale)
     {
         float[] objLerps = new float[objCount];
         List<PRS> results = new List<PRS>(objCount);
@@ -126,7 +110,7 @@ public class CardManager : MonoBehaviour
         return results; 
     }
 
-    void DiscardAllCards()
+    public void DiscardAllCards()
     {
         for(int i=0; i<handCardList.Count; i++)
         {
@@ -138,7 +122,7 @@ public class CardManager : MonoBehaviour
 
         UpdateDiscardPileNum(); 
     }
-    void RecycleCard()
+    public void RecycleCard()
     {
         Shuffle(discardList); 
 
@@ -150,7 +134,7 @@ public class CardManager : MonoBehaviour
         UpdateDeckNum();
         UpdateDiscardPileNum(); 
     }
-    void Shuffle(List<CardSO> cardList)
+    public void Shuffle(List<CardSO> cardList)
     {
         for(int i=0; i<cardList.Count; i++)
         {
@@ -161,11 +145,11 @@ public class CardManager : MonoBehaviour
             cardList[rand] = first; 
         }
     }
-    void UpdateDeckNum()
+    public void UpdateDeckNum()
     {
         deckNum.text = deckList.Count.ToString(); 
     }
-    void UpdateDiscardPileNum()
+    public void UpdateDiscardPileNum()
     {
         discardPileNum.text = discardList.Count.ToString();
     }

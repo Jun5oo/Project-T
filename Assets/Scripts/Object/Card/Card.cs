@@ -31,8 +31,6 @@ public class Card : MonoBehaviour
     }
     public void MoveTransform(PRS prs, bool useDotween, float dotweenTime = 0)
     {
-        Debug.Log("Card MoveTransform"); 
-
         if(useDotween)
         {
             transform.DOMove(prs.position, dotweenTime);
