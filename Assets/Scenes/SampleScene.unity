@@ -1774,13 +1774,13 @@ Transform:
   - {fileID: 383718233}
   - {fileID: 1915940808}
   m_Father: {fileID: 0}
-<<<<<<< Updated upstream
+
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1451784699
-=======
+
   m_LocalEulerAnglesHint: {x: 29.582, y: 0, z: 0}
 --- !u!1 &1402691439
->>>>>>> Stashed changes
+
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
