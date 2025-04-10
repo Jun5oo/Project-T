@@ -8,27 +8,31 @@ using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
-public class Card : MonoBehaviour
+public class Card 
 {
-    CardSO cardSO;
+    CardSO cardData;
 
     public PRS originPRS;
 
     // Card Data 
     public string cardName;
-    public SpriteRenderer sp;
-    public int cardCost; 
-    public string cardDescription; 
+    public string cardDescription;
+    public int cardMana;
+
+    public Sprite cardImage;
     public List<EffectSO> cardEffects; 
 
-    public void Initialize(CardSO cardData)
+    public Card(CardSO cardData)
     {
-        cardSO = cardData;
-        cardName = cardData.cardName;
-        sp.sprite = cardData.cardIcon;
-        cardCost = cardData.cost;
-        cardEffects = cardData.effects; 
+        cardName = cardData.name;
+        cardDescription = cardData.description;
+        cardMana = cardData.mana; 
+
+        cardImage = cardData.image;
+        cardEffects = new List<EffectSO>();
     }
+
+    /*
     public void MoveTransform(PRS prs, bool useDotween, float dotweenTime = 0)
     {
         if(useDotween)
@@ -45,5 +49,6 @@ public class Card : MonoBehaviour
         }
     }
 
-    public CardSO GetCardSO() => cardSO; 
+    public CardSO GetCardSO() => cardSO;
+    */ 
 }

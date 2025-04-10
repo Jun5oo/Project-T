@@ -19,46 +19,8 @@ public class CardManager : MonoBehaviour
     [SerializeField] List<Card> handCardList;
     // Card on Deck 
     [SerializeField] Queue<CardSO> deckList;
-    // Discard Pile 
-    [SerializeField] List<CardSO> discardList;
 
-    [SerializeField] TextMeshProUGUI discardPileNum;
     [SerializeField] TextMeshProUGUI deckNum; 
-
-    void Awake()
-    {
-        Init(); 
-    }
-
-    void Init()
-    {
-        deckList = new Queue<CardSO>();
-
-        for (int i = 0; i < cardList.Count; i++)
-            deckList.Enqueue(cardList[i]);
-
-        UpdateDeckNum();
-        UpdateDiscardPileNum(); 
-    }
-
-    public void DrawCard()
-    {
-        CardSO cardData = null;
-
-        if (deckList.Count <= 0)
-            RecycleCard(); 
-
-        cardData = deckList.Dequeue();
-
-        UpdateDeckNum(); 
-
-        var cardObject = Instantiate(cardPrefab, cardSpawnPoint.position, Quaternion.identity);
-        
-        Card card = cardObject.GetComponent<Card>();
-        card.Initialize(cardData);
-        handCardList.Add(card); 
-        CardAlignment(); 
-    }
 
     public void CardAlignment()
     {
@@ -72,7 +34,7 @@ public class CardManager : MonoBehaviour
         {
             var targetCard = targetCards[i];
             targetCard.originPRS = originCardPRS[i]; 
-            targetCard.MoveTransform(targetCard.originPRS, true, 0.7f); 
+            // targetCard.MoveTransform(targetCard.originPRS, true, 0.7f); 
         }
     }
     public List<PRS> RoundAlignment(Transform left, Transform right, int objCount, float height, Vector3 scale)
@@ -110,47 +72,4 @@ public class CardManager : MonoBehaviour
         return results; 
     }
 
-    public void DiscardAllCards()
-    {
-        for(int i=0; i<handCardList.Count; i++)
-        {
-            discardList.Add(handCardList[i].GetCardSO());
-            handCardList[i].MoveTransform(new PRS(cardDespawnPoint.position, Quaternion.identity, Vector3.one), true, 0.7f); 
-        }
-
-        handCardList.Clear(); 
-
-        UpdateDiscardPileNum(); 
-    }
-    public void RecycleCard()
-    {
-        Shuffle(discardList); 
-
-        for(int i=0; i<discardList.Count; i++)
-            deckList.Enqueue(discardList[i]);
-
-        discardList.Clear();
-
-        UpdateDeckNum();
-        UpdateDiscardPileNum(); 
-    }
-    public void Shuffle(List<CardSO> cardList)
-    {
-        for(int i=0; i<cardList.Count; i++)
-        {
-            int rand = Random.Range(i, cardList.Count);
-            CardSO first = cardList[i];
-            CardSO second = cardList[rand];
-            cardList[i] = second; 
-            cardList[rand] = first; 
-        }
-    }
-    public void UpdateDeckNum()
-    {
-        deckNum.text = deckList.Count.ToString(); 
-    }
-    public void UpdateDiscardPileNum()
-    {
-        discardPileNum.text = discardList.Count.ToString();
-    }
 }
