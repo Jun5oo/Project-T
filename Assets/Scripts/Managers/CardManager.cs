@@ -1,27 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class CardManager : MonoBehaviour
 {
     [SerializeField] GameObject cardPrefab;
-    [SerializeField] Transform cardSpawnPoint;
-    [SerializeField] Transform cardDespawnPoint; 
-
+    [SerializeField] GameObject deckPile;
+    [SerializeField] GameObject discardPile;
+    
     [SerializeField] Transform handLeft;
     [SerializeField] Transform handRight;
 
-    // Temp Card List 
-    [SerializeField] List<CardSO> cardList; 
     // Card on Hand 
-    [SerializeField] List<Card> handCardList;
-    // Card on Deck 
-    [SerializeField] Queue<CardSO> deckList;
+    [SerializeField] List<GameObject> handCardList;
+    [SerializeField] List<CardSO> deckList; 
 
-    [SerializeField] TextMeshProUGUI deckNum; 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+            DrawCard();
 
+        if (Input.GetKeyDown(KeyCode.D))
+            DiscardAll(); 
+    }
+
+    public GameObject CreateCard()
+    {
+        Vector3 deckPos = Camera.main.ScreenToWorldPoint(deckPile.transform.position);
+        
+        PRS prs = new PRS(deckPos, Quaternion.identity, Vector3.zero); 
+
+        var cardObject = Instantiate(cardPrefab);
+        cardObject.GetComponent<Card>()?.Init(deckList[0], prs);
+
+        Debug.Log(cardObject.transform.position); 
+
+        return cardObject; 
+    }
+    public void DrawCard()
+    {
+        var card = CreateCard();
+        AddCard(card); 
+        CardAlignment();
+        SortOrder();
+    }
+    public void DiscardAll()
+    {
+        Vector3 discardPilePos = Camera.main.ScreenToWorldPoint(discardPile.transform.position);
+        PRS prs = new PRS(discardPilePos, Quaternion.identity, Vector3.zero); 
+
+        foreach (var card in handCardList)
+            card.GetComponent<CardMovement>().MoveTransform(prs, true, 0.7f); 
+    }
+    public void AddCard(GameObject card)
+    {
+        handCardList.Add(card); 
+    }
+    public void SortOrder()
+    {
+        int idx = 0; 
+
+        foreach (var card in handCardList)
+            card.GetComponent<SortingGroup>().sortingOrder = idx++;  
+    }
     public void CardAlignment()
     {
         var targetCards = handCardList;
@@ -32,9 +74,8 @@ public class CardManager : MonoBehaviour
         
         for(int i=0; i<targetCards.Count; i++)
         {
-            var targetCard = targetCards[i];
-            targetCard.originPRS = originCardPRS[i]; 
-            // targetCard.MoveTransform(targetCard.originPRS, true, 0.7f); 
+            var movement = targetCards[i].GetComponent<CardMovement>();
+            movement.MoveTransform(originCardPRS[i], true, 0.7f); 
         }
     }
     public List<PRS> RoundAlignment(Transform left, Transform right, int objCount, float height, Vector3 scale)
@@ -45,8 +86,8 @@ public class CardManager : MonoBehaviour
         switch (objCount)
         {
             case 1: objLerps = new float[] { 0.5f }; break; 
-            case 2: objLerps = new float[] { 0.27f, 0.73f }; break;
-            case 3: objLerps = new float[] { 0.1f, 0.5f, 0.9f }; break;
+            case 2: objLerps = new float[] { 0.35f, 0.65f }; break;
+            case 3: objLerps = new float[] { 0.2f, 0.5f, 0.8f }; break;
             
             default:
                 float interval = 1f / (objCount - 1); 
@@ -59,13 +100,18 @@ public class CardManager : MonoBehaviour
         {
             var targetPos = Vector3.Lerp(left.position, right.position, objLerps[i]);
             var targetRot = Quaternion.identity; 
+            
             if(objCount >= 4)
             {
-                float curve = Mathf.Sqrt(Mathf.Pow(height, 2) - Mathf.Pow(objLerps[i] - 0.5f, 2));
-                curve = height >= 0 ? curve : -curve;
-                targetPos.y += curve;
-                targetRot = Quaternion.Slerp(left.rotation, right.rotation, objLerps[i]); 
+                // objLerps[i] (bounds of objLerps = 0 ~ 1) 
+                // height = radius of the half-round
+                float curveY = Mathf.Sqrt(Mathf.Pow(height, 2) - Mathf.Pow(objLerps[i] - 0.5f, 2));
+                targetPos.y += curveY;
+
+                float rotZ = Mathf.LerpAngle(left.eulerAngles.z, right.eulerAngles.z, objLerps[i]); 
+                targetRot = Quaternion.Euler(0, 0, rotZ); 
             }
+
             results.Add(new PRS(targetPos, targetRot, scale));
         }
 

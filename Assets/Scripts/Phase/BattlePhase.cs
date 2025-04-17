@@ -15,7 +15,7 @@ public class BattlePhase : IPhase
 
     public void EnterPhase()
     {
-  
+        
     }
 
     public void UpdatePhase()
@@ -24,6 +24,7 @@ public class BattlePhase : IPhase
     }
     public void ExitPhase()
     {
-
+     
     }
+
 }

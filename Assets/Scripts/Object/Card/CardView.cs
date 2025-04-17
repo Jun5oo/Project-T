@@ -14,14 +14,14 @@ public class CardView : MonoBehaviour
 
     public Card Card { get; private set; }
 
-    public void SetUp(Card card)
+    public void Init(Card card)
     {
         Card = card;
 
-        title.text = card.cardName;
-        description.text = card.cardDescription;
-        mana.text = card.cardMana.ToString();
+        title.text = card.CardName;
+        description.text = card.CardDescription;
+        mana.text = card.CardMana.ToString();
         
-        imageSR.sprite = card.cardImage; 
+        imageSR.sprite = card.CardImage; 
     }
 }

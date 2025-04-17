@@ -1,54 +1,34 @@
-using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
-using UnityEngine.UI;
 
-public class Card 
+public class Card : MonoBehaviour
 {
     CardSO cardData;
 
-    public PRS originPRS;
-
     // Card Data 
-    public string cardName;
-    public string cardDescription;
-    public int cardMana;
+    public string CardName { get; private set; }
+    public string CardDescription { get; private set; }
+    public int CardMana { get; private set; }
 
-    public Sprite cardImage;
-    public List<EffectSO> cardEffects; 
+    public Sprite CardImage { get; private set; }
+    public List<EffectSO> CardEffects { get; private set; } 
 
-    public Card(CardSO cardData)
+    public void Init(CardSO card, PRS prs)
     {
-        cardName = cardData.name;
-        cardDescription = cardData.description;
-        cardMana = cardData.mana; 
+        // 카드 데이터 
+        cardData = card; 
 
-        cardImage = cardData.image;
-        cardEffects = new List<EffectSO>();
+        CardName = cardData.name;
+        CardDescription = cardData.description;
+        CardMana = cardData.mana; 
+
+        CardImage = cardData.image;
+        CardEffects = new List<EffectSO>();
+
+        // 카드 뷰 
+        GetComponent<CardView>()?.Init(this);
+        // 카드 PRS 
+        GetComponent<CardMovement>()?.Init(prs); 
     }
-
-    /*
-    public void MoveTransform(PRS prs, bool useDotween, float dotweenTime = 0)
-    {
-        if(useDotween)
-        {
-            transform.DOMove(prs.position, dotweenTime);
-            transform.DORotateQuaternion(prs.rotation, dotweenTime); 
-            transform.DOScale(prs.scale, dotweenTime);
-        }
-        else
-        {
-            transform.position = prs.position; 
-            transform.rotation = prs.rotation;
-            transform.localScale = prs.scale; 
-        }
-    }
-
-    public CardSO GetCardSO() => cardSO;
-    */ 
 }

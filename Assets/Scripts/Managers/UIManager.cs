@@ -9,8 +9,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private PhaseManager phaseManager; 
 
     [SerializeField] PhaseUI phaseUI;
-    [SerializeField] GameObject waitingUI;
-    [SerializeField] GameObject countDownUI;
+    [SerializeField] WaitingUI waitingUI;
+    [SerializeField] TurnEnd countDownUI;
 
     [SerializeField] GameObject deckUI;
     [SerializeField] GameObject discardPileUI;
@@ -19,16 +19,20 @@ public class UIManager : MonoBehaviour
     {
         phaseManager.OnPhaseChanged += OnUpdatePhaseUI;
     }
+    
+    public void OnEnableUI(IUIElement ui)
+    {
+        ui.Show(); 
+    }
+
+    public void OnDisableUI(IUIElement ui)
+    {
+        ui.Hide(); 
+    }
 
     void OnUpdatePhaseUI(IPhase currentPhase)
     {
-        phaseUI.OnUpdateText(currentPhase); 
-        OnActivePhaseUI(); 
+        phaseUI.OnUpdateText(currentPhase);
+        OnEnableUI(phaseUI); 
     }
-
-    void OnActivePhaseUI() => phaseUI.gameObject.SetActive(true);
-    void OnActiveWaitingUI() => waitingUI.SetActive(true);
-    void OnActivePhaseTimerUI() => countDownUI.SetActive(true); 
-
-
 }

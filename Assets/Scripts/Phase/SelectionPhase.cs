@@ -1,4 +1,3 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +16,7 @@ public class SelectionPhase : IPhase
 
     public void EnterPhase()
     {
+        // Enable UI ! 
         // 2. Draw card 
         // 3. Select enabled  
         // 4. Timer start 
@@ -36,6 +36,8 @@ public class SelectionPhase : IPhase
         // If not, select random cards on the hand 
 
         // Discard all the card that is not selected; 
+        
+        // Disable all the UI; 
     }
 
 }

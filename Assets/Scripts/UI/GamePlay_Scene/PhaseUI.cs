@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class PhaseUI : MonoBehaviour
+public class PhaseUI : MonoBehaviour, IUIElement
 {
     [SerializeField] CanvasGroup canvasGroup;
     [SerializeField] TextMeshProUGUI phaseUIText;
@@ -21,7 +21,6 @@ public class PhaseUI : MonoBehaviour
 
         StartFadeIn(); 
     }
-
     void OnDisable()
     {
         this.canvasGroup.alpha = 0f; 
@@ -66,5 +65,15 @@ public class PhaseUI : MonoBehaviour
             return;
         }
         phaseUIText.text = currentPhase.PhaseName; 
+    }
+
+    public void Show()
+    {
+        this.gameObject.SetActive(true); 
+    }
+
+    public void Hide()
+    {
+        this.gameObject.SetActive(false);
     }
 }

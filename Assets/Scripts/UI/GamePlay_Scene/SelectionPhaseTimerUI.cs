@@ -35,5 +35,5 @@ public class SelectionPhaseTimerUI : MonoBehaviour
         }
 
         timer = 0; 
-    } 
+    }
 }

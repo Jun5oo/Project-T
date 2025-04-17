@@ -3,7 +3,12 @@ guid: 9222f4f11793da849a23101b24c40b43
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - cardPrefab: {instanceID: 0}
+  - cardSpawnPoint: {instanceID: 0}
+  - cardDespawnPoint: {instanceID: 0}
+  - handLeft: {instanceID: 0}
+  - handRight: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -42,3 +42,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 1985739373
+    locked: 0
+  - name: Mana
+    uniqueID: 3927602357
+    locked: 0
+  - name: Title
+    uniqueID: 3750813307
+    locked: 0
+  - name: Description
+    uniqueID: 692973491
+    locked: 0
+  - name: Image
+    uniqueID: 3495228197
+    locked: 0
