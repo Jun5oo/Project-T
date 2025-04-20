@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IUIElement
+public enum PhaseType
 {
-    public void Show();
-    public void Hide();
-
+    Selection, 
+    Battle
 }

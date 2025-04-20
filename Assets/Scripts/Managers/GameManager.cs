@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] GameObject player; 
+    [SerializeField] GameObject Player1;
+    [SerializeField] GameObject Player2; 
+
     [SerializeField] GridManager gridManager;
 
     void Start()
     {
-        player.transform.position = gridManager.GetRandomStartPosition(); 
+        Player1.transform.position = gridManager.GetRandomStartPosition(); 
     }
 
 }

@@ -3,41 +3,73 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SelectionPhase : IPhase
+public class SelectionPhase : IReadyablePhase
 {
-    private CardManager cardManager;
-
-    public string PhaseName { get { return "Selection"; } }
-
-    public void Init(CardManager cardManager)
+    PhaseType phaseType => PhaseType.Selection; 
+    public PhaseType PhaseType
     {
-        this.cardManager = cardManager; 
+        get { return phaseType; }
+    }
+
+    CardManager cardManager;
+    PhaseManager phaseManager;
+    UIManager uiManager; 
+
+    Dictionary<string, bool> playerReady;
+
+    public void Init(CardManager cardManager, PhaseManager phaseManager, UIManager uiManager)
+    {
+        this.cardManager = cardManager;
+        this.phaseManager = phaseManager;
+        this.uiManager = uiManager;
+
+        uiManager.OnSelectionUIOnScreenComplete += ExecuteDrawCard; 
     }
 
     public void EnterPhase()
     {
-        // Enable UI ! 
-        // 2. Draw card 
-        // 3. Select enabled  
-        // 4. Timer start 
-    }
+        playerReady = new Dictionary<string, bool>()
+        {
+            { "Player1", false }, 
+            { "Player2", true }
+        };
 
+        uiManager.ShowSelectionPhaseUI();    
+    }
     public void UpdatePhase()
     {
-        // Allowed to select card 
-        // Timer update 
-        // If turn end button is pressed or timer is 0 
-            // call exit phase(); 
-    }
 
+    }
     public void ExitPhase()
     {
-        // Check is all the card is selected; 
-        // If not, select random cards on the hand 
-
-        // Discard all the card that is not selected; 
-        
-        // Disable all the UI; 
+        cardManager.DiscardAll(); 
+        // If last card is discarded, then Move UI; 
+        // After UI is all disappeared from screen, Enable Phase UI; 
     }
 
+    public void ExecuteDrawCard()
+    {
+        cardManager.DrawCards(5); 
+    }
+
+    public void PlayerReady(string playerID)
+    {
+        if(playerReady.ContainsKey(playerID))
+            playerReady[playerID] = true;
+        
+        else
+        {
+            Debug.Log("playerID doesn't exits"); 
+        }
+    }
+    public bool IsAllPlayerReady()
+    {
+        foreach(var isReady in playerReady.Values)
+        {
+            if (!isReady)
+                return false; 
+        }
+
+        return true; 
+    }
 }

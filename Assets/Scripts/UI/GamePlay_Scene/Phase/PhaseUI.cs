@@ -64,7 +64,7 @@ public class PhaseUI : MonoBehaviour, IUIElement
             Debug.LogWarning("Phase is null");
             return;
         }
-        phaseUIText.text = currentPhase.PhaseName; 
+        phaseUIText.text = currentPhase.PhaseType.ToString(); 
     }
 
     public void Show()

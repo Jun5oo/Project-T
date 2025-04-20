@@ -5,11 +5,8 @@ using UnityEngine;
 
 public interface IPhase 
 {
-    public string PhaseName { get; }
-
+    public PhaseType PhaseType { get; }
     public void EnterPhase();
-
     public void UpdatePhase();
-
     public void ExitPhase(); 
 }

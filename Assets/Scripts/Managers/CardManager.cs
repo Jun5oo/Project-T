@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,16 +15,10 @@ public class CardManager : MonoBehaviour
 
     // Card on Hand 
     [SerializeField] List<GameObject> handCardList;
-    [SerializeField] List<CardSO> deckList; 
+    [SerializeField] List<CardSO> deckList;
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-            DrawCard();
-
-        if (Input.GetKeyDown(KeyCode.D))
-            DiscardAll(); 
-    }
+    public Action OnDrawComplete; 
+    public Action OnDiscardComplete; 
 
     public GameObject CreateCard()
     {
@@ -34,9 +29,11 @@ public class CardManager : MonoBehaviour
         var cardObject = Instantiate(cardPrefab);
         cardObject.GetComponent<Card>()?.Init(deckList[0], prs);
 
-        Debug.Log(cardObject.transform.position); 
-
         return cardObject; 
+    }
+    public void AddCard(GameObject card)
+    {
+        handCardList.Add(card);
     }
     public void DrawCard()
     {
@@ -45,17 +42,26 @@ public class CardManager : MonoBehaviour
         CardAlignment();
         SortOrder();
     }
-    public void DiscardAll()
+    public void DrawCards(int drawNum)
+    {
+        StartCoroutine(coDrawCards(drawNum)); 
+    }
+    public void Discard(GameObject card, bool isLastCard = false)
     {
         Vector3 discardPilePos = Camera.main.ScreenToWorldPoint(discardPile.transform.position);
-        PRS prs = new PRS(discardPilePos, Quaternion.identity, Vector3.zero); 
+    
+        PRS targetPrs = new PRS(discardPilePos, Quaternion.identity, Vector3.zero);
 
-        foreach (var card in handCardList)
-            card.GetComponent<CardMovement>().MoveTransform(prs, true, 0.7f); 
+        if (!isLastCard)
+            card.GetComponent<CardMovement>().MoveTransform(targetPrs, true, 0.7f);
+        else
+            card.GetComponent<CardMovement>().MoveTransform(targetPrs, true, 0.7f, OnDiscardComplete); 
+
+        handCardList.Remove(card); 
     }
-    public void AddCard(GameObject card)
+    public void DiscardAll()
     {
-        handCardList.Add(card); 
+        StartCoroutine(coDiscardAll()); 
     }
     public void SortOrder()
     {
@@ -118,4 +124,29 @@ public class CardManager : MonoBehaviour
         return results; 
     }
 
+    IEnumerator coDrawCards(int drawNum)
+    {
+        // Selection Phase 시작 때 UI가 준비 된 후, 0.5초 후 드로우 
+        yield return new WaitForSeconds(0.5f); 
+
+        for(int i=0; i<drawNum; i++)
+        {
+            DrawCard();
+            yield return new WaitForSeconds(0.1f); 
+        }
+    }
+    IEnumerator coDiscardAll()
+    {
+        bool isLastCard = false; 
+
+        while(handCardList.Count > 0)
+        {
+            if (handCardList.Count == 1)
+                isLastCard = true; 
+            
+            Discard(handCardList[0], isLastCard);
+            
+            yield return new WaitForSeconds(0.1f); 
+        }
+    }
 }

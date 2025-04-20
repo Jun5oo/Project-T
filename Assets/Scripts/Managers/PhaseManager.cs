@@ -10,15 +10,15 @@ public class PhaseManager : MonoBehaviour
     SelectionPhase selectionPhase;
     BattlePhase battlePhase; 
 
-    public Action<IPhase> OnPhaseChanged;
+    public Action OnPhaseChanged;
 
     void Start()
     {
         selectionPhase = new SelectionPhase();
-        selectionPhase.Init(FindObjectOfType<CardManager>());
+        selectionPhase.Init(FindObjectOfType<CardManager>(), FindObjectOfType<PhaseManager>(), FindObjectOfType<UIManager>());
 
         battlePhase = new BattlePhase();
-        battlePhase.Init(FindObjectOfType<CardManager>()); 
+        battlePhase.Init(FindObjectOfType<CardManager>(), FindObjectOfType<PhaseManager>(), FindObjectOfType<UIManager>()); 
 
         currentPhase = selectionPhase;
         InitPhase(); 
@@ -32,19 +32,29 @@ public class PhaseManager : MonoBehaviour
     void InitPhase()
     {
         currentPhase.EnterPhase();
-        OnPhaseChanged?.Invoke(currentPhase);
+        OnPhaseChanged?.Invoke();
     }
 
-    public void ChangePhase(IPhase nextPhase)
+    public void ChangePhase()
     {
         currentPhase?.ExitPhase();
-        currentPhase = nextPhase;
+        
+        switch (currentPhase.PhaseType)
+        {
+            case PhaseType.Selection:
+                currentPhase = battlePhase; 
+                break;
+            case PhaseType.Battle:
+                currentPhase = selectionPhase; 
+                break;
+            default:
+                Debug.LogError("No such PhaseType exits");
+                break; 
+        }
 
-        OnPhaseChanged?.Invoke(currentPhase);
+        OnPhaseChanged?.Invoke();
         currentPhase.EnterPhase();
     }
 
     public IPhase GetCurrentPhase() => currentPhase;
-    public IPhase GetSelectionPhase() => selectionPhase;
-    public IPhase GetBattlePhase() => battlePhase;
 }

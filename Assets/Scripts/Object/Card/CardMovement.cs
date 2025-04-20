@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,11 +17,11 @@ public class CardMovement : MonoBehaviour
         this.transform.localScale = prs.scale; 
     }
 
-    public void MoveTransform(PRS prs, bool useDotween, float dotweenTime = 0)
+    public void MoveTransform(PRS prs, bool useDotween, float dotweenTime = 0, Action callback = null)
     {
         if(useDotween)
         {
-            transform.DOMove(prs.position, dotweenTime);
+            transform.DOMove(prs.position, dotweenTime).OnComplete(()=> callback?.Invoke());
             transform.DORotateQuaternion(prs.rotation, dotweenTime); 
             transform.DOScale(prs.scale, dotweenTime);
         }
