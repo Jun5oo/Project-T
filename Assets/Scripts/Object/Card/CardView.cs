@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -10,7 +8,6 @@ public class CardView : MonoBehaviour
     [SerializeField] TextMeshPro mana;
     
     [SerializeField] SpriteRenderer imageSR;
-    [SerializeField] GameObject wrapper;
 
     public Card Card { get; private set; }
 
@@ -22,6 +19,6 @@ public class CardView : MonoBehaviour
         description.text = card.CardDescription;
         mana.text = card.CardMana.ToString();
         
-        imageSR.sprite = card.CardImage; 
+        imageSR.sprite = card.CardImage;
     }
 }

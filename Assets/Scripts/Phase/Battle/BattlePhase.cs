@@ -25,18 +25,13 @@ public class BattlePhase : IPhase
     {
         
     }
-
     public void UpdatePhase()
     {
-        // Execute all the cards in order 
-
-        // if all the cards are executed, change phase; 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             phaseManager.ChangePhase();
         }
     }
-
     public void ExitPhase()
     {
      

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,10 +16,8 @@ public class CardManager : MonoBehaviour
 
     // Card on Hand 
     [SerializeField] List<GameObject> handCardList;
+    [SerializeField] List<Card> selectedCardList; 
     [SerializeField] List<CardSO> deckList;
-
-    public Action OnDrawComplete; 
-    public Action OnDiscardComplete; 
 
     public GameObject CreateCard()
     {
@@ -35,34 +34,32 @@ public class CardManager : MonoBehaviour
     {
         handCardList.Add(card);
     }
-    public void DrawCard()
+    
+    public void DrawCard(Action callback = null)
     {
         var card = CreateCard();
+        
         AddCard(card); 
-        CardAlignment();
+        CardAlignment(callback);
         SortOrder();
     }
-    public void DrawCards(int drawNum)
+    public void DrawCards(int drawNum, Action callback)
     {
-        StartCoroutine(coDrawCards(drawNum)); 
+        StartCoroutine(DrawCardsRoutine(drawNum, callback)); 
     }
-    public void Discard(GameObject card, bool isLastCard = false)
+    
+    public void Discard(GameObject card, Action callback = null)
     {
         Vector3 discardPilePos = Camera.main.ScreenToWorldPoint(discardPile.transform.position);
-    
         PRS targetPrs = new PRS(discardPilePos, Quaternion.identity, Vector3.zero);
-
-        if (!isLastCard)
-            card.GetComponent<CardMovement>().MoveTransform(targetPrs, true, 0.7f);
-        else
-            card.GetComponent<CardMovement>().MoveTransform(targetPrs, true, 0.7f, OnDiscardComplete); 
-
-        handCardList.Remove(card); 
+        card.GetComponent<CardMovement>().MoveTransform(targetPrs, true, 0.7f, callback); 
+        handCardList.Remove(card);
     }
-    public void DiscardAll()
+    public void DiscardAll(Action callback)
     {
-        StartCoroutine(coDiscardAll()); 
+        StartCoroutine(DiscardAllRoutine(callback)); 
     }
+   
     public void SortOrder()
     {
         int idx = 0; 
@@ -70,7 +67,7 @@ public class CardManager : MonoBehaviour
         foreach (var card in handCardList)
             card.GetComponent<SortingGroup>().sortingOrder = idx++;  
     }
-    public void CardAlignment()
+    public void CardAlignment(Action callback = null)
     {
         var targetCards = handCardList;
        
@@ -81,7 +78,7 @@ public class CardManager : MonoBehaviour
         for(int i=0; i<targetCards.Count; i++)
         {
             var movement = targetCards[i].GetComponent<CardMovement>();
-            movement.MoveTransform(originCardPRS[i], true, 0.7f); 
+            movement.MoveTransform(originCardPRS[i], true, 0.7f, callback); 
         }
     }
     public List<PRS> RoundAlignment(Transform left, Transform right, int objCount, float height, Vector3 scale)
@@ -123,28 +120,27 @@ public class CardManager : MonoBehaviour
 
         return results; 
     }
-
-    IEnumerator coDrawCards(int drawNum)
+    
+    IEnumerator DrawCardsRoutine(int drawNum, Action callback)
     {
-        // Selection Phase 시작 때 UI가 준비 된 후, 0.5초 후 드로우 
         yield return new WaitForSeconds(0.5f); 
 
         for(int i=0; i<drawNum; i++)
         {
-            DrawCard();
+            DrawCard(callback);
             yield return new WaitForSeconds(0.1f); 
         }
     }
-    IEnumerator coDiscardAll()
+    IEnumerator DiscardAllRoutine(Action callback)
     {
-        bool isLastCard = false; 
-
         while(handCardList.Count > 0)
         {
-            if (handCardList.Count == 1)
-                isLastCard = true; 
-            
-            Discard(handCardList[0], isLastCard);
+            bool isLastCard = (handCardList.Count == 1);
+
+            if (isLastCard)
+                Discard(handCardList[0], callback);
+            else
+                Discard(handCardList[0]);
             
             yield return new WaitForSeconds(0.1f); 
         }

@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -9,19 +8,20 @@ public class TurnEndUI : MonoBehaviour
 
     [Header("Reference")]
     [SerializeField] PhaseManager phaseManager;
+    [SerializeField] SelectionPhase selectionPhase; 
+
     [SerializeField] TextMeshProUGUI timerUI;
 
     float timer;
-
-    void OnEnable()
+    void Start()
     {
-        timerUI.text = TIME.ToString(); 
-        StartCountDown(); 
+        selectionPhase = (SelectionPhase)phaseManager.GetCurrentPhase();
+        selectionPhase.OnPhaseStarted += StartCountDown; 
     }
 
-    void OnDisable()
+    void OnDestroy()
     {
-        StopCountDown(); 
+        selectionPhase.OnPhaseStarted -= StartCountDown;    
     }
 
     public void OnClick()
@@ -29,22 +29,15 @@ public class TurnEndUI : MonoBehaviour
         if (phaseManager.GetCurrentPhase().PhaseType != PhaseType.Selection)
             return;
 
-        StopCountDown(); 
-
-        if(phaseManager.GetCurrentPhase() is IReadyablePhase readyablePhase)
-        {
-            readyablePhase.PlayerReady("Player1");
-            
-            if(readyablePhase.IsAllPlayerReady())
-                phaseManager.ChangePhase(); 
-        }
+        StopCountDown();
+        
+        selectionPhase.SelectionState = SelectionState.Ready; 
     }
 
     void StartCountDown()
     {
         StartCoroutine(CountDownCoroutine()); 
     }
-
     void StopCountDown()
     {
         StopAllCoroutines(); 

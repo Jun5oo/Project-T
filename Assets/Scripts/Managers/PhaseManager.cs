@@ -1,40 +1,40 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PhaseManager : MonoBehaviour
 {
     IPhase currentPhase;
 
+    CardManager cardManager;
+    UIManager uiManager;
+
     SelectionPhase selectionPhase;
-    BattlePhase battlePhase; 
+    BattlePhase battlePhase;
 
-    public Action OnPhaseChanged;
+    public Action<IPhase> OnPhaseChanged; 
 
-    void Start()
+    public void Init(CardManager cardManager, UIManager uiManager)
     {
+        this.cardManager = cardManager; 
+        this.uiManager = uiManager;
+
         selectionPhase = new SelectionPhase();
-        selectionPhase.Init(FindObjectOfType<CardManager>(), FindObjectOfType<PhaseManager>(), FindObjectOfType<UIManager>());
-
+        selectionPhase.Init(cardManager, this, uiManager);
         battlePhase = new BattlePhase();
-        battlePhase.Init(FindObjectOfType<CardManager>(), FindObjectOfType<PhaseManager>(), FindObjectOfType<UIManager>()); 
+        battlePhase.Init(cardManager, this, uiManager);
 
-        currentPhase = selectionPhase;
-        InitPhase(); 
+        currentPhase = selectionPhase; 
     }
-
     public void Update()
     {
         currentPhase?.UpdatePhase();
     }
-
-    void InitPhase()
+    public void StartPhase()
     {
-        currentPhase.EnterPhase();
-        OnPhaseChanged?.Invoke();
+        currentPhase?.EnterPhase();
+        OnPhaseChanged?.Invoke(currentPhase); 
     }
-
     public void ChangePhase()
     {
         currentPhase?.ExitPhase();
@@ -51,10 +51,13 @@ public class PhaseManager : MonoBehaviour
                 Debug.LogError("No such PhaseType exits");
                 break; 
         }
-
-        OnPhaseChanged?.Invoke();
+        
         currentPhase.EnterPhase();
+        OnPhaseChanged?.Invoke(currentPhase); 
     }
-
+    public void Execute(IEnumerator coroutine)
+    {
+        StartCoroutine(coroutine); 
+    }
     public IPhase GetCurrentPhase() => currentPhase;
 }

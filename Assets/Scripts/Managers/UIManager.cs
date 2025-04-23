@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Manager")]
-    [SerializeField] private PhaseManager phaseManager;
-    [SerializeField] private CardManager cardManager; 
+    [Header("Managers")]
+    [SerializeField] CardManager cardManager; 
 
     [Header("Phase UI")]
     [SerializeField] PhaseUI phaseUI;
@@ -29,21 +28,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Vector2 turnEndOnScreenPos;
     [SerializeField] private Vector2 turnEndOffScreenPos;
 
-    public Action OnSelectionUIOnScreenComplete;
-    public Action OnSelectionUIOffScreenComplete; 
-
-    void OnEnable()
+    void Awake()
     {
-        Init(); 
-    }
-
-    public void Init()
-    {
-        // this.phaseManager = phaseManager;
-
-        phaseManager.OnPhaseChanged += OnUpdatePhaseUI;
-        cardManager.OnDiscardComplete += HideSelectionPhaseUI; 
-
         deckPileOnScreenPos = new Vector2(750f, -335f);
         deckPileOffScreenPos = new Vector2(1150f, -335f);
 
@@ -51,40 +37,42 @@ public class UIManager : MonoBehaviour
         discardPileOffScreenPos = new Vector2(-1150f, -335f);
 
         turnEndOnScreenPos = new Vector2(750f, -175f);
-        turnEndOffScreenPos = new Vector2(1150f, -175f); 
+        turnEndOffScreenPos = new Vector2(1150f, -175f);
     }
-
+    public void Init(CardManager cardManager)
+    {
+        this.cardManager = cardManager;
+    }
     public void OnEnableUI(IUIElement ui)
     {
         ui.Show(); 
     }
-
     public void OnDisableUI(IUIElement ui)
     {
         ui.Hide(); 
     }
-
-    public void ShowSelectionPhaseUI()
+    public void ShowSelectionPhaseUI(Action callback = null)
     {
+        Sequence sequence = DOTween.Sequence(); 
 
-        deckPileRectTransform.DOAnchorPos(deckPileOnScreenPos, 0.5f);
-        discardPileRectTransform.DOAnchorPos(discardPileOnScreenPos, 0.5f);
-        turnEndRectTransform.DOAnchorPos(turnEndOnScreenPos, 0.5f)
-            .OnComplete(() => OnSelectionUIOnScreenComplete?.Invoke()); 
+        sequence.Join(deckPileRectTransform.DOAnchorPos(deckPileOnScreenPos, 0.5f));
+        sequence.Join(discardPileRectTransform.DOAnchorPos(discardPileOnScreenPos, 0.5f));
+        sequence.Join(turnEndRectTransform.DOAnchorPos(turnEndOnScreenPos, 0.5f)); 
+        sequence.OnComplete(()=>callback?.Invoke());
     }
-
-    public void HideSelectionPhaseUI()
+    public void HideSelectionPhaseUI(Action callback = null)
     {
+        Sequence sequence = DOTween.Sequence();
+
         // SetEase(Ease.InBack): 움직이기 전에 약간 뒤로 이동했다가 가속하는 효과 
-        deckPileRectTransform.DOAnchorPos(deckPileOffScreenPos, 0.5f).SetEase(Ease.InBack);
-        discardPileRectTransform.DOAnchorPos(discardPileOffScreenPos, 0.5f).SetEase(Ease.InBack);
-        turnEndRectTransform.DOAnchorPos(turnEndOffScreenPos, 0.5f).SetEase(Ease.InBack)
-            .OnComplete(() => OnSelectionUIOffScreenComplete?.Invoke());
+        sequence.Join(deckPileRectTransform.DOAnchorPos(deckPileOffScreenPos, 0.5f).SetEase(Ease.InBack));
+        sequence.Join(discardPileRectTransform.DOAnchorPos(discardPileOffScreenPos, 0.5f).SetEase(Ease.InBack));
+        sequence.Join(turnEndRectTransform.DOAnchorPos(turnEndOffScreenPos, 0.5f).SetEase(Ease.InBack));
+        sequence.OnComplete(() => callback?.Invoke());
     }
-
-    public void OnUpdatePhaseUI()
+    public void OnUpdatePhaseUI(IPhase currentPhase)
     {
-        phaseUI.OnUpdateText(phaseManager.GetCurrentPhase());
+        phaseUI.OnUpdateText(currentPhase);
         OnEnableUI(phaseUI); 
     }
 }
