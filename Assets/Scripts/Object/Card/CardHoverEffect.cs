@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class CardHoverEffect : MonoBehaviour
+public class CardHoverEffect : MonoBehaviour, IHoverable 
 {
     CardMovement cardMovement; 
 
@@ -36,52 +37,29 @@ public class CardHoverEffect : MonoBehaviour
         isHover = false; 
     }
 
-    void OnMouseEnter()
+    public void OnHoverEnter()
     {
-        if (cardMovement.isMoving)
-            return;
-
-        if (isHover)
+        if (isHover || cardMovement.isMoving)
             return; 
 
-        originPRS = cardMovement.originPRS; 
-        hoverPRS = new PRS(originPRS.position + hoverPosition, hoverRotation, hoverScale);
+        originPRS = cardMovement.originPRS;
 
-        originOrder = sortGroup.sortingOrder;
+        hoverPRS = new PRS(originPRS.position + hoverPosition, hoverRotation, hoverScale);
         sortGroup.sortingOrder = hoverOrder;
 
-        cardMovement.MoveTransform(hoverPRS, true);
-        
+        cardMovement.MoveTransform(hoverPRS, true); 
         isHover = true; 
     }
 
-    void OnMouseExit()
+    public void OnHoverExit()
     {
         if (!isHover)
             return; 
 
         sortGroup.sortingOrder = originOrder;
-
+        
         cardMovement.MoveTransform(originPRS, true);
-
         isHover = false; 
-    }
-
-    void OnMouseDown()
-    {
-        sortGroup.sortingOrder = hoverOrder;
-        cardMovement.MoveTransform(originPRS, true);
-    }
-
-    void OnMouseDrag()
-    {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        this.transform.position = mousePos;
-    }
-
-    private void OnMouseUp()
-    {
-        cardMovement.MoveTransform(originPRS, true, 0.7f);
     }
 
 }
